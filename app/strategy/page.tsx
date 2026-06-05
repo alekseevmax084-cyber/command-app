@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
 import { AppLayout } from '@/components/AppLayout'
+import { WorkspaceTasks } from '@/components/WorkspaceTasks'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -246,6 +247,11 @@ export default function StrategyPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Tasks section */}
+      <div className="mt-8">
+        <WorkspaceTasks workspace="strategy" currentProfile={currentProfile} title="Задачи стратега" />
+      </div>
     </AppLayout>
   )
 }

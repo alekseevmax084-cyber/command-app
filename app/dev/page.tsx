@@ -40,6 +40,7 @@ export default function DevPage() {
         .order('created_at', { ascending: false }),
       supabase.from('profiles').select('*'),
     ])
+    if (tr.error) console.error('tasks load error:', tr.error)
     const profileList = (pr.data ?? []) as Profile[]
     setTasks((tr.data ?? []) as Task[])
     setCurrentProfile(profileList.find(p => p.id === user?.id) ?? null)

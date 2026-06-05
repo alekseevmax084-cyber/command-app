@@ -14,6 +14,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { WorkspaceTasks } from '@/components/WorkspaceTasks'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 const CURRENT_YEAR = new Date().getFullYear()
@@ -291,6 +292,11 @@ export default function MarketingPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Tasks section */}
+      <div className="mt-8">
+        <WorkspaceTasks workspace="marketing" currentProfile={currentProfile} title="Задачи маркетолога" />
+      </div>
     </AppLayout>
   )
 }
