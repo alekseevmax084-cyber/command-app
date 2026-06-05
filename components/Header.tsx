@@ -1,8 +1,7 @@
 'use client'
 import { Plus } from 'lucide-react'
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { GlobalTaskModal } from '@/components/GlobalTaskModal'
+import { TaskCreateDrawer } from '@/components/TaskCreateDrawer'
 import type { Profile } from '@/types'
 import { formatDate } from '@/lib/utils'
 
@@ -17,24 +16,47 @@ export function Header({ title, profile }: Props) {
 
   return (
     <>
-      <header className="h-14 border-b border-[var(--border-dim)] bg-[var(--surface)] flex items-center px-6 gap-4 shrink-0">
-        <h1 className="font-display font-bold text-base text-[var(--text-1)] flex-1 tracking-tight uppercase">
+      <header
+        className="flex items-center px-6 gap-4 shrink-0"
+        style={{ height: 56, borderBottom: '1px solid var(--border-dim)', background: 'var(--surface)' }}
+      >
+        <h1
+          className="flex-1 tracking-tight uppercase"
+          style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 14, color: 'var(--text-1)' }}
+        >
           {title}
         </h1>
 
-        <span className="font-mono text-xs text-[var(--text-3)] hidden md:block">{today}</span>
+        <span className="hidden md:block" style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-3)' }}>
+          {today}
+        </span>
 
         {profile && (
-          <span className="font-mono text-xs text-[var(--text-2)]">{profile.name}</span>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-2)' }}>
+            {profile.name}
+          </span>
         )}
 
-        <Button variant="default" size="sm" onClick={() => setOpen(true)} className="gap-1">
-          <Plus size={14} />
+        <button
+          onClick={() => setOpen(true)}
+          className="flex items-center gap-1.5 transition-colors"
+          style={{
+            padding: '6px 14px',
+            background: 'var(--accent)', color: 'var(--bg)',
+            fontFamily: 'var(--font-display)', fontWeight: 700,
+            fontSize: 13, borderRadius: 4, border: 'none', cursor: 'pointer',
+          }}
+        >
+          <Plus size={14} strokeWidth={2.5} />
           Задача
-        </Button>
+        </button>
       </header>
 
-      <GlobalTaskModal open={open} onOpenChange={setOpen} profile={profile} />
+      <TaskCreateDrawer
+        open={open}
+        onOpenChange={setOpen}
+        currentProfile={profile}
+      />
     </>
   )
 }

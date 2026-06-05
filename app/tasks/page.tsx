@@ -5,14 +5,14 @@ import { PriorityBadge } from '@/components/PriorityBadge'
 import { TeamAvatarChip } from '@/components/TeamAvatarChip'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { GlobalTaskModal } from '@/components/GlobalTaskModal'
+import { TaskCreateDrawer } from '@/components/TaskCreateDrawer'
 import { TaskDrawer } from '@/components/TaskDrawer'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
 import { formatDate, isOverdue } from '@/lib/utils'
 import type { Task, Profile, TaskStatus, TaskPriority, TaskWorkspace } from '@/types'
 import { STATUS_LABELS, WORKSPACE_LABELS } from '@/types'
-import { Plus, ArrowUpDown } from 'lucide-react'
+import { Plus } from 'lucide-react'
 
 type StatusFilter = TaskStatus | 'all'
 type PriorityFilter = TaskPriority | 'all'
@@ -180,7 +180,7 @@ export default function TasksPage() {
         )}
       </div>
 
-      <GlobalTaskModal open={modalOpen} onOpenChange={setModalOpen} profile={currentProfile} onCreated={load} />
+      <TaskCreateDrawer open={modalOpen} onOpenChange={setModalOpen} currentProfile={currentProfile} onCreated={load} />
       <TaskDrawer task={selectedTask} currentProfile={currentProfile} onClose={() => setSelectedTask(null)} onUpdated={load} />
     </AppLayout>
   )
