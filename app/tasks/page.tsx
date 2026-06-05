@@ -180,7 +180,7 @@ export default function TasksPage() {
         )}
       </div>
 
-      <TaskCreateDrawer open={modalOpen} onOpenChange={setModalOpen} currentProfile={currentProfile} onCreated={load} />
+      <TaskCreateDrawer open={modalOpen} onOpenChange={setModalOpen} currentProfile={currentProfile} onCreated={(t) => { if (t) setTasks(prev => [t as Task, ...prev]); load() }} />
       <TaskDrawer task={selectedTask} currentProfile={currentProfile} onClose={() => setSelectedTask(null)} onUpdated={load} />
     </AppLayout>
   )

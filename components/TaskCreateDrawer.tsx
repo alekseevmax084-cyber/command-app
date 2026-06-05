@@ -12,7 +12,8 @@ interface Props {
   onOpenChange: (v: boolean) => void
   currentProfile?: Profile | null
   defaultWorkspace?: TaskWorkspace
-  onCreated?: () => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onCreated?: (task: any) => void
 }
 
 const PRIORITY_COLORS: Record<TaskPriority, string> = {
@@ -74,10 +75,15 @@ export function TaskCreateDrawer({
       .select()
       .single()
 
-    if (err) { setError(err.message); setSaving(false); return }
+    if (err) {
+      console.error('Task insert error:', err)
+      setError(err.message)
+      setSaving(false)
+      return
+    }
 
     if (user && created) {
-      await supabase.from('task_history').insert({
+      supabase.from('task_history').insert({
         task_id: created.id,
         user_id: user.id,
         action: 'created',
@@ -87,7 +93,7 @@ export function TaskCreateDrawer({
 
     setSaving(false)
     onOpenChange(false)
-    onCreated?.()
+    onCreated?.(created)
   }
 
   return (
