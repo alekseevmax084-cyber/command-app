@@ -157,9 +157,7 @@ export default function DevPage() {
         currentProfile={currentProfile}
         defaultWorkspace="dev"
         onCreated={(newTask) => {
-          // optimistic: add to list immediately, then sync
           if (newTask) setTasks(prev => [newTask as Task, ...prev])
-          load()
         }}
       />
 
