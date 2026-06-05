@@ -12,13 +12,21 @@ export default async function ProgressPage() {
 
   const [profilesRes, tasksRes, historyRes] = await Promise.all([
     supabase.from('profiles').select('*').order('created_at'),
-    supabase.from('tasks').select('*, assigned_to_profile:profiles!assigned_to(*), assigned_by_profile:profiles!assigned_by(*)'),
-    supabase.from('task_history').select('*, profile:profiles(*)').order('created_at', { ascending: false }).limit(30),
+    supabase.from('tasks').select('*'),
+    supabase.from('task_history').select('*').order('created_at', { ascending: false }).limit(30),
   ])
 
   const profiles: Profile[] = profilesRes.data ?? []
-  const tasks: Task[] = tasksRes.data ?? []
-  const history: TaskHistory[] = historyRes.data ?? []
+  const profileMap = Object.fromEntries(profiles.map(p => [p.id, p]))
+  const tasks: Task[] = ((tasksRes.data ?? []) as Task[]).map(t => ({
+    ...t,
+    assigned_to_profile: t.assigned_to ? profileMap[t.assigned_to] ?? undefined : undefined,
+    assigned_by_profile: t.assigned_by ? profileMap[t.assigned_by] ?? undefined : undefined,
+  }))
+  const history: TaskHistory[] = ((historyRes.data ?? []) as TaskHistory[]).map(h => ({
+    ...h,
+    profile: h.user_id ? profileMap[h.user_id] ?? undefined : undefined,
+  }))
   const currentProfile = profiles.find(p => p.id === user?.id) ?? null
 
   const now = new Date()

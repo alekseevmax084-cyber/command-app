@@ -38,14 +38,24 @@ export function WorkspaceTasks({ workspace, currentProfile, title = 'Задач�
 
   const load = useCallback(async () => {
     const supabase = createClient()
-    const { data, error } = await supabase
-      .from('tasks')
-      .select('*, assigned_to_profile:profiles!assigned_to(*), assigned_by_profile:profiles!assigned_by(*)')
-      .eq('workspace', workspace)
-      .neq('status', 'done')
-      .order('created_at', { ascending: false })
-    if (error) console.error(`WorkspaceTasks [${workspace}] error:`, error)
-    setTasks((data ?? []) as Task[])
+    const [tr, pr] = await Promise.all([
+      supabase.from('tasks').select('*').order('created_at', { ascending: false }),
+      supabase.from('profiles').select('*'),
+    ])
+    if (tr.error) console.error(`WorkspaceTasks [${workspace}] error:`, tr.error)
+
+    const profileList = (pr.data ?? []) as Profile[]
+    const profileMap = Object.fromEntries(profileList.map(p => [p.id, p]))
+
+    const filtered = ((tr.data ?? []) as Task[])
+      .filter(t => t.workspace === workspace && t.status !== 'done')
+      .map(t => ({
+        ...t,
+        assigned_to_profile: t.assigned_to ? profileMap[t.assigned_to] ?? undefined : undefined,
+        assigned_by_profile: t.assigned_by ? profileMap[t.assigned_by] ?? undefined : undefined,
+      }))
+
+    setTasks(filtered)
   }, [workspace])
 
   useEffect(() => { load() }, [load])

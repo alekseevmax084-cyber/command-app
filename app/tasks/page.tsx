@@ -41,12 +41,19 @@ export default function TasksPage() {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     const [tr, pr] = await Promise.all([
-      supabase.from('tasks').select('*, assigned_to_profile:profiles!assigned_to(*), assigned_by_profile:profiles!assigned_by(*)').order('created_at', { ascending: false }),
+      supabase.from('tasks').select('*').order('created_at', { ascending: false }),
       supabase.from('profiles').select('*'),
     ])
-    setTasks(tr.data ?? [])
-    setProfiles(pr.data ?? [])
-    setCurrentProfile((pr.data ?? []).find(p => p.id === user?.id) ?? null)
+    const profileList = (pr.data ?? []) as Profile[]
+    const profileMap = Object.fromEntries(profileList.map(p => [p.id, p]))
+    const tasksWithProfiles = ((tr.data ?? []) as Task[]).map(t => ({
+      ...t,
+      assigned_to_profile: t.assigned_to ? profileMap[t.assigned_to] ?? undefined : undefined,
+      assigned_by_profile: t.assigned_by ? profileMap[t.assigned_by] ?? undefined : undefined,
+    }))
+    setTasks(tasksWithProfiles)
+    setProfiles(profileList)
+    setCurrentProfile(profileList.find(p => p.id === user?.id) ?? null)
   }, [])
 
   useEffect(() => { load() }, [load])

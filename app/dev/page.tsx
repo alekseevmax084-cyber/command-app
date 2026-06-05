@@ -32,19 +32,26 @@ export default function DevPage() {
   const load = useCallback(async () => {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
+
     const [tr, pr] = await Promise.all([
-      supabase
-        .from('tasks')
-        .select('*, assigned_to_profile:profiles!assigned_to(*), assigned_by_profile:profiles!assigned_by(*)')
-        .order('created_at', { ascending: false }),
+      supabase.from('tasks').select('*').order('created_at', { ascending: false }),
       supabase.from('profiles').select('*'),
     ])
-    if (tr.error) console.error('tasks load error:', tr.error)
-    console.log('all tasks from DB:', tr.data?.map((t: Task) => ({ id: t.id, title: t.title, workspace: t.workspace })))
-    const all = (tr.data ?? []) as Task[]
-    const devTasks = all.filter(t => t.workspace === 'dev')
-    console.log('dev tasks after filter:', devTasks.length)
+
+    if (tr.error) console.error('tasks error:', tr.error)
+    if (pr.error) console.error('profiles error:', pr.error)
+
     const profileList = (pr.data ?? []) as Profile[]
+    const profileMap = Object.fromEntries(profileList.map(p => [p.id, p]))
+
+    const devTasks = ((tr.data ?? []) as Task[])
+      .filter(t => t.workspace === 'dev')
+      .map(t => ({
+        ...t,
+        assigned_to_profile: t.assigned_to ? profileMap[t.assigned_to] ?? undefined : undefined,
+        assigned_by_profile: t.assigned_by ? profileMap[t.assigned_by] ?? undefined : undefined,
+      }))
+
     setTasks(devTasks)
     setCurrentProfile(profileList.find(p => p.id === user?.id) ?? null)
   }, [])
