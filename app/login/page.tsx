@@ -18,11 +18,6 @@ export default function LoginPage() {
     e.preventDefault()
     setError('')
     setLoading(true)
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    console.log('SUPABASE URL:', url)
-    console.log('SUPABASE KEY:', key?.slice(0, 20) + '...')
-    alert(`URL: ${url}\nKEY: ${key?.slice(0, 20)}...`)
     try {
       const supabase = createClient()
 
