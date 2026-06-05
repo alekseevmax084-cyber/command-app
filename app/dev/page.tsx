@@ -36,13 +36,16 @@ export default function DevPage() {
       supabase
         .from('tasks')
         .select('*, assigned_to_profile:profiles!assigned_to(*), assigned_by_profile:profiles!assigned_by(*)')
-        .eq('workspace', 'dev')
         .order('created_at', { ascending: false }),
       supabase.from('profiles').select('*'),
     ])
     if (tr.error) console.error('tasks load error:', tr.error)
+    console.log('all tasks from DB:', tr.data?.map((t: Task) => ({ id: t.id, title: t.title, workspace: t.workspace })))
+    const all = (tr.data ?? []) as Task[]
+    const devTasks = all.filter(t => t.workspace === 'dev')
+    console.log('dev tasks after filter:', devTasks.length)
     const profileList = (pr.data ?? []) as Profile[]
-    setTasks((tr.data ?? []) as Task[])
+    setTasks(devTasks)
     setCurrentProfile(profileList.find(p => p.id === user?.id) ?? null)
   }, [])
 
